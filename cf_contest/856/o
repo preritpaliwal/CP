@@ -1,0 +1,8 @@
+1 i,preveq,newscore,prevscore = 1 0 1 1
+1 i,preveq,newscore,prevscore = 2 1 6 2
+2 i,preveq,newscore,prevscore = 3 0 8 6
+3 i,preveq,newscore,prevscore = 4 0 8 8
+4 i,preveq,newscore,prevscore = 5 1 8 8
+5 i,preveq,newscore,prevscore = 6 1 9.6 8
+6 i,preveq,newscore,prevscore = 7 0 8.22857 9.6
+6 
