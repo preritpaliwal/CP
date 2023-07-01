@@ -8,25 +8,29 @@ int main(){
     while(n--){
         string s;
         cin>>s;
-        vector<int> curmin(m,0);
-        for(int i = 0;i<m;i+=4){
-            if(i==0){
-                int ones = 0;
-                int cons = 0;
-                for(int j = 0;j<4;j++){
-                    if(s[i]=='1'){
-                        ones++;
-                    }
-                }
-                int zero = 4-ones;
-                for(int i = 0;i<3;i++){
-                    if(s[i]=='1' && s[i+1]=='1'){
-                        cons++;
-                        i++;
-                    }
-                }
-                
+        int ones = 0;
+        for(int i = 0;i<m;i++){
+            if(s[i]=='1'){
+                ones++;
             }
         }
+        int c = 0;
+        for(int i = 0;i<m-1;i++){
+            if(s[i]=='1' && s[i+1]=='1'){
+                c++;
+                i++;
+            }
+        }
+        minans += ones - min(m/4,c);
+        c = 0;
+        for(int i = 0;i<m-1;i++){
+            if(!(s[i]=='1' && s[i+1]=='1')){
+                c++;
+                i++;
+            }
+        }
+        maxans += ones - max(0,m/4-c);
     }
+    cout<<minans<<" "<<maxans<<endl;
 }
+

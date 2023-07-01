@@ -1,10 +1,68 @@
 #include <bits/stdc++.h>
 using namespace std;
+vector<int> maxDist;
+vector<vector<int>> adj;
+int n;
+vector<int> height;
+
+void dfs1(int cur, int par=-1){
+    int maxH = -1;
+    for(int i =0;i<adj[cur].size();i++){
+        if(adj[cur][i]==par){
+            continue;
+        }
+        dfs1(adj[cur][i],cur);
+        maxH = max(maxH, height[adj[cur][i]]);
+    }
+    height[cur] = 1+maxH;
+}
+
+void dfs2(int cur,int par=-1){
+    int max1=0,max2=0;
+    for(int i:adj[cur]){
+        if(i==par){
+            continue;
+        }
+        if(height[i]>max1){
+            max2 = max1;
+            max1 = height[i];
+        }
+        else if(max2<height[i]){
+            max2 = height[i];
+        }
+    }
+    for(int u:adj[cur]){
+        if(u==par){
+            continue;
+        }
+        if(max1 == height[u]){
+            maxDist[u] = 1 + max(1+max2,maxDist[cur]);
+        }
+        else{
+            maxDist[u] = 1 + max(1+max1,maxDist[u]);
+        }
+        dfs2(u,cur);
+    }
+}
+
+void getMaxDist(){
+    height.resize(n,0);
+    dfs1(0);
+    // for(int i = 0;i<n;i++){
+    //     cerr<<height[i]<<" ";
+    // }
+    // cerr<<endl;
+    maxDist[0] = height[0];
+    dfs2(0);
+    for(int i = 0;i<n;i++){
+        maxDist[i] = max(maxDist[i],height[i]);
+    }
+}
+
 
 void solve(){
-    int n;
     cin>> n;
-    vector<vector<int>> adj(n);
+    adj.resize(n);
     for(int i=0; i<n-1; i++){
         // cout<<i<<endl;
         int a,b;
@@ -14,102 +72,49 @@ void solve(){
         adj[a].push_back(b);
         adj[b].push_back(a);
     }
-    // // cout<<"1"<<endl;
-    // vector<int> dist(n,1e9);
-    // dist[0] = 0;
-    // queue<int> q;
-    // q.push(0);
-    // while(!q.empty()){
-    //     int cur = q.front();
-    //     q.pop();
-    //     for(int i = 0;i<adj[cur].size();i++){
-    //         if(dist[adj[cur][i]] > dist[cur]+1){
-    //             dist[adj[cur][i]] = dist[cur]+1;
-    //             q.push(adj[cur][i]);
-    //         }
-    //     }
-    // }
-    // // cout<<"2"<<endl;
-    // int maxDist = 0;
-    // int i_maxDist = 0;
+    maxDist.resize(n,0);
     // for(int i = 0;i<n;i++){
-    //     if(maxDist<dist[i]){
-    //         maxDist = dist[i];
-    //         i_maxDist = i;
-    //     }
-    //     dist[i] = 1e9;
-    // }
-    // // cout<<"1"<<endl;
-    // cout<<"i_maxDist = "<<i_maxDist<<endl;
-    // dist[i_maxDist] = 0;
-    // q.push(i_maxDist);
-    // while(!q.empty()){
-    //     int cur = q.front();
-    //     q.pop();
-    //     for(int i = 0;i<adj[cur].size();i++){
-    //         if(dist[adj[cur][i]] > dist[cur]+1){
-    //             dist[adj[cur][i]] = dist[cur]+1;
-    //             q.push(adj[cur][i]);
-    //         }
-    //     }
-    // }
-    // // cout<<"2"<<endl;
-
-    // maxDist = 0;
-    // for(int i = 0;i<n;i++){
-    //     maxDist = max(maxDist,dist[i]);
-    // }
-    // set<int> dia;
-    // dia.insert(i_maxDist);
-    // for(int i = 0;i<n;i++){
-    //     if(dist[i]==maxDist){
-    //         dia.insert(i);
-    //     }
-    // }
-    
-    // cout<<"max Dist: "<<maxDist<<"\nNodes:  "<<endl;
-    // for(int i:dia){
-    //     cout<<i<<" ";
-    // }
-    // cout<<endl;
-
-    // vector<int> mark(n,n);
-    // queue<int> q;
-    // set<int> leaf;
-    // q.push(0);
-    // while(!q.empty()){
-    //     int cur = q.front();
-    //     q.pop();
-    //     for(int i:adj[cur]){
-    //         mark[i] = mark[cur]-1;
-    //         if(adj[i].size()==1){
-    //             leaf.insert(i);
-    //         }
-    //         else{
-    //             q.push(i);
-    //         }
-    //     }
-    // }
-    // for(int l:leaf){
-    //     mark[l] = 0;
-    //     q.push(l);
+    //     vector<int> dist(n,-1);
+    //     dist[i] = 0;
+    //     queue<int> q;
+    //     q.push(i);
+    //     int maxDistHere = 0;
     //     while(!q.empty()){
     //         int cur = q.front();
     //         q.pop();
-    //         for(int i:adj[cur]){
-    //             if(mark[i]>mark[cur]+1){
-    //                 mark[i] = mark[cur]+1;
-    //                 q.push(i);
+    //         for(int p = 0;p<adj[cur].size();p++){
+    //             if(dist[adj[cur][p]]==-1){
+    //                 dist[adj[cur][p]] = dist[cur] + 1;
+    //                 maxDistHere = max(maxDistHere, dist[cur]+1);
+    //                 q.push(adj[cur][p]);
     //             }
     //         }
     //     }
-    // }
-    // map<int,int> mp;
-    // for(int i = 0;i<n;i++){
-    //     mp[mark[i]]++;
+    //     maxDist[i] = maxDistHere;
     // }
 
-    
+    getMaxDist();
+
+    sort(maxDist.begin(),maxDist.end());
+    for(int i = 0;i<n;i++){
+        cerr<<maxDist[i]<<" ";
+    }
+    cerr<<endl;
+    vector<int> ans(n);
+    int noGroups = 1;
+    int cnt = 0;
+    for(int i = 1;i<=n;i++){
+        while(cnt<n && i>maxDist[cnt]){
+            cnt++;
+            noGroups++;
+            if(cnt==n){
+                noGroups--;
+            }
+        }
+        ans[i-1] = noGroups;
+        cout<<ans[i-1]<<" ";
+    }
+    cout<<endl;
 }
 
 
