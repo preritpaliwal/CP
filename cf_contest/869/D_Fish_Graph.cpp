@@ -1,134 +1,84 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool cycleDetected(vector<vector<int>> &v, int n,vector<int> &parent, int end){
-    cerr<<"here\n"<<n<<" "<<end<<endl;
-    for(int i = 1;i<parent.size();i++){
-        cerr<<parent[i]<<" ";
-    }
-    cerr<<endl;
-    set<int> inCycle;
-    int extraEdges = 0;
-    int curNode = n;
-    int uniqueNode = -1;
-    int noEdges = 0;
-    while(curNode != parent[end]){
-        if(curNode==0){
-            return false;
-        }
-        inCycle.insert(curNode);
-        curNode = parent[curNode];
-    }
-    // cerr<<"incycle: ";
-    // for(auto i:inCycle){
-    //     cerr<<i<<" ";
-    // }
-    // cerr<<endl;
-    curNode = n;
-    while(curNode != parent[end]){
-        if(curNode==0){
-            return false;
-        }
-        int curExtraEdges = 0;
-        // cerr<<curNode<<" ";
-        for(int i = 0;i<v[curNode].size();i++){
-            // cerr<<v[curNode][i]<<" ";
-            if(inCycle.find(v[curNode][i])==inCycle.end()){
-                curExtraEdges++;
-            }
-        }
-        // cerr<<endl;
-        if(curExtraEdges==2){
-            uniqueNode = curNode;
-        }
-        extraEdges+=curExtraEdges;
-        curNode = parent[curNode];
-        noEdges++;
-    }
-    // cout<<"works?"<<endl;
-    cerr<<extraEdges<<endl;
-    cerr<<uniqueNode<<endl;
-    if( uniqueNode!=-1){
-        cout<<"YES\n";
-        cout<<noEdges+2<<endl;
-        int curNode = n;
-        int prevNode = end;
-        while(curNode!=parent[end]){
-            cout<<curNode<<" "<<prevNode<<endl;
-            if(curNode==uniqueNode){
-                for(int i = 0;i<v[curNode].size();i++){
-                    if(inCycle.find(v[curNode][i])==inCycle.end()){
-                        cout<<v[curNode][i]<<" "<<curNode<<endl;
-                    }
-                }
-            }
-            prevNode = curNode;
-            curNode = parent[curNode];
-        }
-        return true;
-    }
-    return false;
-}
+int n,m;
+vector<vector<int>> adj;
+vector<int> cycleNodes;
+vector<pair<int,int>> ans;
 
-bool dfs(vector<vector<int>> &v, int n, vector<int> &parent){
-    // cerr<<n<<endl;
-    bool ret = false;
-    for(int i = 0;i<v[n].size();i++){
-        int curNode = v[n][i];
-        if(parent[curNode]==-1){
-            // cerr<<"curNode: "<<curNode<<endl;
-            parent[curNode] = n;
-            ret |= dfs(v,curNode,parent);
-            if(ret){
-                return ret;
-            }
-        }
-        else if(parent[n]==curNode){
-            continue;
-        }
-        else{
-            if(cycleDetected(v,n,parent,curNode)){
-                return true;
-            }
-        }
-    }
-    return ret;
+
+void dfs(int nn, int pp=0){
+
 }
 
 void solve(){
-    int n,m;
     cin>>n>>m;
-    vector<vector<int>> v(n+1);
-    for(int i = 0;i<m;i++){
-        int a,b;
-        cin>>a>>b;
-        v[a].push_back(b);
-        v[b].push_back(a);
+    adj.clear();
+    adj.resize(n+1);
+    for(int i=0;i<m;i++){
+        int a,b;cin>>a>>b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
     }
-    for(int i = 1;i<=n;i++){
-        cerr<<i<<" : ";
-        for(int j = 0;j<v[i].size();j++){
-            cerr<<v[i][j]<<" ";
-        }
-        cerr<<endl;;
-    }
-    vector<int> parent(n+1,-1);
-    bool ret = false;
-    for(int i = 1;i<=n;i++){
-        if(parent[i]==-1){
-            parent[i] = 0;
-            ret |= dfs(v,i,parent);
-            if(ret){
-                break;
+    vector<pair<int,int>> ans;
+    for(int i=1;i<=n;i++){
+        if(adj[i].size()>=4){
+            queue<pair<int,int>> q;
+            q.push({i,0});
+            vector<int> vis(n+1,-1);
+            vis[i]=0;
+            pair<int,int> cycle{-1,-1};
+            while(!q.empty()){
+                auto cur=q.front();q.pop();
+                // cerr<<cur.first<<endl;
+                for(int u:adj[cur.first]){
+                    if(u==cur.second)continue;
+                    if(vis[u]!=-1){
+                        // cerr<<u<<"done cycle\n";
+                        cycle.first=u;
+                        cycle.second=cur.first;
+                        break;
+                    }
+                    else{
+                        // cerr<<"pushing: "<<u<<endl;
+                        q.push({u,cur.first});
+                        vis[u]=cur.first;
+                    }
+                }
+                if(cycle.first!=-1){
+                    break;
+                }
             }
+            if(cycle.first==-1){
+                continue;
+            }
+            ans.push_back(cycle);
+            pair<int,int> used{-1,-1};
+            int cur=cycle.first;
+            while(vis[cur]!=0){
+                ans.push_back({cur,vis[cur]});
+                used.first=cur;
+                cur=vis[cur];
+            }
+            cur=cycle.second;
+            while(vis[cur]!=0){
+                ans.push_back({cur,vis[cur]});
+                used.second=cur;
+                cur=vis[cur];
+            }
+            int cnt=0;
+            for(int tmp:adj[i]){
+                if(tmp==used.first || tmp==used.second)continue;
+                ans.push_back({i,tmp});
+                cnt++;
+                if(cnt==2)break;
+            }
+            cout<<"YES\n"<<ans.size()<<endl;
+            for(auto i:ans)cout<<i.first<<" "<<i.second<<endl;
+            return;
         }
     }
-
-    if(!ret){
-        cout<<"NO\n";
-    }
-
-
+    cout<<"NO\n";
     return;
 }
 
@@ -137,6 +87,7 @@ int main(){
     cin>>t;
     while(t--){
         solve();
+        // cerr<<"------\n\n";
     }
     return 0;
 }

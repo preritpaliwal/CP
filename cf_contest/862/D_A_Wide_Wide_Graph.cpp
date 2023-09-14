@@ -73,33 +73,33 @@ void solve(){
         adj[b].push_back(a);
     }
     maxDist.resize(n,0);
-    // for(int i = 0;i<n;i++){
-    //     vector<int> dist(n,-1);
-    //     dist[i] = 0;
-    //     queue<int> q;
-    //     q.push(i);
-    //     int maxDistHere = 0;
-    //     while(!q.empty()){
-    //         int cur = q.front();
-    //         q.pop();
-    //         for(int p = 0;p<adj[cur].size();p++){
-    //             if(dist[adj[cur][p]]==-1){
-    //                 dist[adj[cur][p]] = dist[cur] + 1;
-    //                 maxDistHere = max(maxDistHere, dist[cur]+1);
-    //                 q.push(adj[cur][p]);
-    //             }
-    //         }
-    //     }
-    //     maxDist[i] = maxDistHere;
-    // }
+    for(int i = 0;i<n;i++){
+        vector<int> dist(n,-1);
+        dist[i] = 0;
+        queue<int> q;
+        q.push(i);
+        int maxDistHere = 0;
+        while(!q.empty()){
+            int cur = q.front();
+            q.pop();
+            for(int p = 0;p<adj[cur].size();p++){
+                if(dist[adj[cur][p]]==-1){
+                    dist[adj[cur][p]] = dist[cur] + 1;
+                    maxDistHere = max(maxDistHere, dist[cur]+1);
+                    q.push(adj[cur][p]);
+                }
+            }
+        }
+        maxDist[i] = maxDistHere;
+    }
 
-    getMaxDist();
+    // getMaxDist();
 
     sort(maxDist.begin(),maxDist.end());
-    for(int i = 0;i<n;i++){
-        cerr<<maxDist[i]<<" ";
-    }
-    cerr<<endl;
+    // for(int i = 0;i<n;i++){
+    //     cerr<<maxDist[i]<<" ";
+    // }
+    // cerr<<endl;
     vector<int> ans(n);
     int noGroups = 1;
     int cnt = 0;
