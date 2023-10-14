@@ -7,5 +7,8 @@ inline int sq(int a){
 
 int main() {
     int a=3;
-    cout<<sq(++a)<<endl;
+    // cout<<sq(++a)<<endl;
+    int arr[a];
+    arr[1]=3;
+    cout<<arr[1]<<endl;
 }
